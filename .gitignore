@@ -161,4 +161,57 @@ cython_debug/
 #  option (not recommended) you can uncomment the following to ignore the entire idea folder.
 #.idea/
 
+# Environnement virtuel
+venv/
 rpspybackenv/
+
+# Fichiers de configuration sensibles
+.env
+*.env
+
+# Cache Python
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Logs
+*.log
+logs/
+
+# Base de données locale (si applicable)
+*.sqlite3
+*.db
+
+# Alembic
+alembic/versions/*.pyc
+alembic/__pycache__/
+
+# Fichiers générés par l'IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# Fichiers de dépendances
+*.egg-info/
+pip-log.txt
+pip-delete-this-directory.txt
+
+# Fichiers générés
+*.bak
+*.backup
+.DS_Store
+
+# Uvicorn
+*.pid
+
+# Caches d'autres outils
+.mypy_cache/
+pytest_cache/
+.pytest_cache/
+.cache/
+
+
+# Docker (si applicable)
+docker-compose.override.yml
+*.env.docker

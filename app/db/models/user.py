@@ -1,15 +1,8 @@
-# app/db/models/user.py
-import enum
-
 from sqlalchemy import Boolean, Column, Enum, Integer, String
+from sqlalchemy.orm import relationship
 
 from app.db.base import Base
-
-
-class UserRole(str, enum.Enum):
-    admin = "admin"
-    user = "user"
-    guest = "guest"
+from app.schemas.schema_user import UserRole
 
 
 class User(Base):
@@ -22,3 +15,14 @@ class User(Base):
     is_active = Column(Boolean(), default=True)
     is_superuser = Column(Boolean(), default=False)
     role = Column(Enum(UserRole), default=UserRole.user)
+
+    # Relations avec les campagnes
+    created_campaigns = relationship(
+        "Campaign", foreign_keys="Campaign.created_by", back_populates="created_by_user"
+    )
+    mj_campaigns = relationship(
+        "Campaign", foreign_keys="Campaign.mj_id", back_populates="mj"
+    )
+    accessible_campaigns = relationship(
+        "Campaign", secondary="campaign_users", back_populates="authorized_users"
+    )

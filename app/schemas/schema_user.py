@@ -1,35 +1,36 @@
-import enum
-from typing import Optional
+from typing import List, Optional
 
 from pydantic import BaseModel, EmailStr
 
-
-class UserRole(str, enum.Enum):
-    admin = "admin"
-    user = "user"
-    guest = "guest"
+from app.db.models.enums.user_role import UserRole
 
 
 class UserBase(BaseModel):
     username: str
     email: EmailStr
+    is_active: Optional[bool] = True
+    is_superuser: Optional[bool] = False
     role: Optional[UserRole] = UserRole.user
 
 
 class UserCreate(UserBase):
-    password: str
+    hashed_password: str
 
 
-# Modèle pour la réponse utilisateur
+class UserUpdate(BaseModel):
+    username: Optional[str]
+    email: Optional[EmailStr]
+    hashed_password: Optional[str]
+    is_active: Optional[bool]
+    is_superuser: Optional[bool]
+    role: Optional[UserRole]
+
+
 class UserResponse(UserBase):
     id: int
-    is_active: bool
-
-
-class User(UserBase):
-    id: int
-    is_active: bool
-    is_superuser: bool
+    created_campaigns: List[int] = []  # Liste des IDs des campagnes créées
+    mj_campaigns: List[int] = []  # Liste des IDs des campagnes où l'utilisateur est MJ
+    accessible_campaigns: List[int] = []  # Liste des IDs des campagnes accessibles
 
     class Config:
         orm_mode = True

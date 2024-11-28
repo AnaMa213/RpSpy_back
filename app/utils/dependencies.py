@@ -61,3 +61,38 @@ def require_role(required_role: UserRole):
             )
 
     return Depends(role_dependency)
+
+
+# Fonction pour vérifier le token
+def verify_token(token: str = Depends(oauth2_scheme)):
+    """
+    Verify the JWT token and return the payload.
+
+    Args:
+        token (str): The JWT token to verify.
+
+    Returns:
+        dict: The payload of the JWT token.
+
+    Raises:
+        HTTPException: If the token is invalid or has expired.
+    """
+
+    try:
+        payload = jwt.decode(
+            token, settings.SECRET_KEY, algorithms=[settings.ALGORITHM]
+        )
+        username: str = payload.get("sub")
+        if username is None:
+            raise HTTPException(
+                status_code=status.HTTP_401_UNAUTHORIZED,
+                detail="Invalid token",
+                headers={"WWW-Authenticate": "Bearer"},
+            )
+        return payload
+    except JWTError as exc:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Invalid token",
+            headers={"WWW-Authenticate": "Bearer"},
+        ) from exc

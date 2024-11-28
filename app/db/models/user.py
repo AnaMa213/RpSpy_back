@@ -1,7 +1,7 @@
 from sqlalchemy import Boolean, Column, Enum, Integer, String
 from sqlalchemy.orm import relationship
 
-from app.db.base import Base
+from app.db.models.base import Base
 from app.schemas.schema_user import UserRole
 
 
@@ -25,4 +25,7 @@ class User(Base):
     )
     accessible_campaigns = relationship(
         "Campaign", secondary="campaign_users", back_populates="authorized_users"
+    )
+    players = relationship(
+        "Player", back_populates="user", cascade="all, delete-orphan"
     )

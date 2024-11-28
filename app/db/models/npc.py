@@ -1,7 +1,7 @@
 from sqlalchemy import Column, Integer, String, Text
 from sqlalchemy.orm import relationship
 
-from app.db.base import Base
+from app.db.models.base import Base
 
 
 class NPC(Base):
@@ -25,4 +25,6 @@ class NPC(Base):
     campaigns = relationship(
         "Campaign", secondary="campaign_npcs", back_populates="npcs"
     )
-    sessions = relationship("Session", secondary="session_npcs", back_populates="npcs")
+    sessions = relationship(
+        "CampaignSession", secondary="session_npcs", back_populates="npcs"
+    )

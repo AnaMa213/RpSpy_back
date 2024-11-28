@@ -1,7 +1,7 @@
 from sqlalchemy import Column, Float, ForeignKey, Integer, String, Text
 from sqlalchemy.orm import relationship
 
-from app.db.base import Base
+from app.db.models.base import Base
 
 
 class Player(Base):
@@ -33,5 +33,5 @@ class Player(Base):
         "Campaign", secondary="campaign_players", back_populates="players"
     )
     sessions = relationship(
-        "Session", secondary="session_players", back_populates="players"
+        "CampaignSession", secondary="session_players", back_populates="players"
     )

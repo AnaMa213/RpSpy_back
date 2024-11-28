@@ -1,8 +1,9 @@
-from sqlalchemy import Column, DateTime, Enum, ForeignKey, Integer, String, Text
-from sqlalchemy.orm import relationship
-from sqlalchemy.sql import func
+from datetime import datetime, timezone
 
-from app.db.base import Base
+from sqlalchemy import Column, DateTime, Enum, ForeignKey, Integer, String, Text, event
+from sqlalchemy.orm import relationship
+
+from app.db.models.base import Base
 from app.db.models.enums.campaign_genre import CampaignGenre
 from app.db.models.enums.campaign_status import CampaignStatus
 
@@ -19,8 +20,14 @@ class Campaign(Base):
     )  # 2083 est la longueur maximale d'une URL
     created_by = Column(Integer, ForeignKey("users.id"), nullable=False)  # Créateur
     mj_id = Column(Integer, ForeignKey("users.id"), nullable=False)  # Maître du Jeu
-    created_at = Column(DateTime(timezone=True), server_default=func.now())
-    updated_at = Column(DateTime(timezone=True), onupdate=func.now())
+    created_at = Column(
+        DateTime(timezone=True), default=lambda: datetime.now(timezone.utc)
+    )
+    updated_at = Column(
+        DateTime(timezone=True),
+        default=lambda: datetime.now(timezone.utc),
+        onupdate=lambda: datetime.now(timezone.utc),
+    )
     status = Column(
         Enum(CampaignStatus), default=CampaignStatus.IN_PROGRESS
     )  # Ex. "en cours", "terminée", "archivée"
@@ -46,5 +53,11 @@ class Campaign(Base):
         "User", secondary="campaign_users", back_populates="accessible_campaigns"
     )
     sessions = relationship(
-        "Session", back_populates="campaign", cascade="all, delete-orphan"
+        "CampaignSession", back_populates="campaign", cascade="all, delete-orphan"
     )
+
+
+# Écouteur pour mettre à jour `updated_at`
+@event.listens_for(Campaign, "before_update")
+def update_timestamp(target):
+    target.updated_at = datetime.now(timezone.utc)
